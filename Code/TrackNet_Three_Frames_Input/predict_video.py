@@ -1,9 +1,11 @@
 import argparse
-import Models
-import Queue
+
 import cv2
 import numpy as np
+import Queue
 from PIL import Image, ImageDraw
+
+import Models
 
 #parse parameters
 parser = argparse.ArgumentParser()
@@ -41,7 +43,7 @@ m = modelFN( n_classes , input_height=height, input_width=width   )
 m.compile(loss='categorical_crossentropy', optimizer= 'adadelta' , metrics=['accuracy'])
 m.load_weights(  save_weights_path  )
 
-# In order to draw the trajectory of tennis, we need to save the coordinate of preious 7 frames 
+# In order to draw the trajectory of tennis, we need to save the coordinate of preious 7 frames
 q = Queue.deque()
 for i in range(0,8):
 	q.appendleft(None)
@@ -54,12 +56,12 @@ output_video = cv2.VideoWriter(output_video_path,fourcc, fps, (output_width,outp
 
 #both first and second frames cant be predict, so we directly write the frames to output video
 #capture frame-by-frame
-video.set(1,currentFrame); 
+video.set(1,currentFrame);
 ret, img1 = video.read()
 #write image to video
 output_video.write(img1)
 currentFrame +=1
-#resize it 
+#resize it
 img1 = cv2.resize(img1, ( width , height ))
 #input must be float type
 img1 = img1.astype(np.float32)
@@ -70,7 +72,7 @@ ret, img = video.read()
 #write image to video
 output_video.write(img)
 currentFrame +=1
-#resize it 
+#resize it
 img = cv2.resize(img, ( width , height ))
 #input must be float type
 img = img.astype(np.float32)
@@ -83,18 +85,18 @@ while(True):
 	img1 = img
 
 	#capture frame-by-frame
-	video.set(1,currentFrame); 
+	video.set(1,currentFrame);
 	ret, img = video.read()
 
 	#if there dont have any frame in video, break
-	if not ret: 
+	if not ret:
 		break
 
 	#img is the frame that TrackNet will predict the position
 	#since we need to change the size and type of img, copy it to output_img
 	output_img = img
 
-	#resize it 
+	#resize it
 	img = cv2.resize(img, ( width , height ))
 	#input must be float type
 	img = img.astype(np.float32)
@@ -114,7 +116,7 @@ while(True):
 	pr = pr.reshape(( height ,  width , n_classes ) ).argmax( axis=2 )
 
 	#cv2 image must be numpy.uint8, convert numpy.int64 to numpy.uint8
-	pr = pr.astype(np.uint8) 
+	pr = pr.astype(np.uint8)
 
 	#reshape the image size as original input image
 	heatmap = cv2.resize(pr  , (output_width, output_height ))
@@ -127,7 +129,7 @@ while(True):
 
 	#In order to draw the circle in output_img, we need to used PIL library
 	#Convert opencv image format to PIL image format
-	PIL_image = cv2.cvtColor(output_img, cv2.COLOR_BGR2RGB)   
+	PIL_image = cv2.cvtColor(output_img, cv2.COLOR_BGR2RGB)
 	PIL_image = Image.fromarray(PIL_image)
 
 	#check if there have any tennis be detected
@@ -137,12 +139,12 @@ while(True):
 
 			x = int(circles[0][0][0])
 			y = int(circles[0][0][1])
-			print currentFrame, x,y
+			print(currentFrame, x,y)
 
 			#push x,y to queue
-			q.appendleft([x,y])   
+			q.appendleft([x,y])
 			#pop x,y from queue
-			q.pop()    
+			q.pop()
 		else:
 			#push None to queue
 			q.appendleft(None)
@@ -175,4 +177,4 @@ while(True):
 # everything is done, release the video
 video.release()
 output_video.release()
-print "finish"
+print("finish")

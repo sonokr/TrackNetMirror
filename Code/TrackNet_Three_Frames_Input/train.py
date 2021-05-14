@@ -1,7 +1,10 @@
 import argparse
-import Models , LoadBatches
+
 from keras import optimizers
 from keras.utils import plot_model
+
+import LoadBatches
+import Models
 
 #parse parameters
 parser = argparse.ArgumentParser()
@@ -47,17 +50,17 @@ model_output_width = m.outputWidth
 Generator  = LoadBatches.InputOutputGenerator( training_images_name,  train_batch_size,  n_classes , input_height , input_width , model_output_height , model_output_width)
 
 
-#start to train the model, and save weights until finish 
+#start to train the model, and save weights until finish
 '''
 m.fit_generator( Generator, step_per_epochs, epochs )
 m.save_weights( save_weights_path + ".0" )
 
 '''
 
-#start to train the model, and save weights per 50 epochs  
+#start to train the model, and save weights per 50 epochs
 
 for ep in range(1, epochs+1 ):
-	print "Epoch :", str(ep) + "/" + str(epochs)
+	print("Epoch :" + str(ep) + "/" + str(epochs))
 	m.fit_generator(Generator, step_per_epochs)
 	if ep % 50 == 0:
 		m.save_weights(save_weights_path + ".0")

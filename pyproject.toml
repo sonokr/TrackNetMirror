@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "tracknetmirror"
+version = "0.1.0"
+description = ""
+authors = ["sonokr <ryotakusunoki@hotmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+black = "^21.5b1"
+flake8 = "^3.9.2"
+mypy = "^0.812"
+
+[tool.black]
+line-length = 99
+
+[tool.isort]
+include_trailing_comma = true
+line_length = 99
+multi_line_output = 3
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

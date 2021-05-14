@@ -1,5 +1,6 @@
-from keras.models import *
 from keras.layers import *
+from keras.models import *
+
 
 def TrackNet( n_classes ,  input_height, input_width ): # input_height = 360, input_width = 640
 
@@ -114,7 +115,7 @@ def TrackNet( n_classes ,  input_height, input_width ): # input_height = 360, in
 	x = ( BatchNormalization())(x)
 
 	o_shape = Model(imgs_input , x ).output_shape
-	print "layer24 output shape:", o_shape[1],o_shape[2],o_shape[3]
+	print("layer24 output shape:", o_shape[1],o_shape[2],o_shape[3])
 	#layer24 output shape: 256, 360, 640
 
 	OutputHeight = o_shape[2]
