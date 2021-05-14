@@ -48,7 +48,8 @@ for i in range(0, 8):
     q.appendleft(None)
 
 # save prediction images as vidoe
-# Tutorial: https://stackoverflow.com/questions/33631489/error-during-saving-a-video-using-python-and-opencv
+# Tutorial:
+# https://stackoverflow.com/questions/33631489/error-during-saving-a-video-using-python-and-opencv
 fourcc = cv2.VideoWriter_fourcc(*"XVID")
 output_video = cv2.VideoWriter(output_video_path, fourcc, fps, (output_width, output_height))
 
@@ -76,9 +77,12 @@ img = cv2.resize(img, (width, height))
 # input must be float type
 img = img.astype(np.float32)
 
+prev_x, prev_y = [0, 0]
+prev_vel_x, prev_vel_y = [0, 0]
+color_index = 0
+colors = ["red", "blue"]
 
 while True:
-
     img2 = img1
     img1 = img
 
@@ -140,6 +144,15 @@ while True:
             y = int(circles[0][0][1])
             print(currentFrame, x, y)
 
+            vel_x = x - prev_x
+            vel_y = y - prev_y
+
+            is_vel_x_changed = (vel_x > 0 and prev_vel_x < 0) or (vel_x < 0 and prev_vel_x > 0)
+            is_vel_y_changed = (vel_y > 0 and prev_vel_y < 0) or (vel_y < 0 and prev_vel_y > 0)
+
+            if is_vel_x_changed or is_vel_y_changed:
+                colos_index = 0 if color_index == 1 else 1
+
             # push x,y to queue
             q.appendleft([x, y])
             # pop x,y from queue
@@ -162,7 +175,7 @@ while True:
             draw_y = q[i][1]
             bbox = (draw_x - 2, draw_y - 2, draw_x + 2, draw_y + 2)
             draw = ImageDraw.Draw(PIL_image)
-            draw.ellipse(bbox, outline="yellow")
+            draw.ellipse(bbox, outline=colors[color_index])
             del draw
 
     # Convert PIL image format back to opencv image format
@@ -172,6 +185,10 @@ while True:
 
     # next frame
     currentFrame += 1
+
+    # save position and velocity
+    prev_x, prev_y = X, y
+    prev_vel_x, prev_vel_y = vel_x, vel_y
 
 # everything is done, release the video
 video.release()
