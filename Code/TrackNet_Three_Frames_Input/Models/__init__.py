@@ -1,2 +1,1 @@
-import TrackNet
-
+from . import TrackNet
