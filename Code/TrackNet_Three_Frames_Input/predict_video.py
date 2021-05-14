@@ -1,5 +1,5 @@
 import argparse
-from queue import Queue
+from collections import deque
 
 import cv2
 import numpy as np
@@ -44,7 +44,7 @@ m.compile(loss="categorical_crossentropy", optimizer="adadelta", metrics=["accur
 m.load_weights(save_weights_path)
 
 # In order to draw the trajectory of tennis, we need to save the coordinate of preious 7 frames
-q = Queue.deque()
+q = deque()
 for i in range(0, 8):
     q.appendleft(None)
 
