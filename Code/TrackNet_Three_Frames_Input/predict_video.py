@@ -2,10 +2,9 @@ import argparse
 from collections import deque
 
 import cv2
+import Models
 import numpy as np
 from PIL import Image, ImageDraw
-
-from . import Models
 
 # parse parameters
 parser = argparse.ArgumentParser()
