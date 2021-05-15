@@ -20,10 +20,9 @@ save_weights_path = args.save_weights_path
 n_classes = args.n_classes
 
 if output_video_path == "":
-    # output video in same path
     output_video_path = input_video_path.split(".")[0] + "_TrackNet.mp4"
 
-# get video fps&video size
+# get video fps and video size
 video = cv2.VideoCapture(input_video_path)
 fps = int(video.get(cv2.CAP_PROP_FPS))
 output_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -55,32 +54,22 @@ output_video = cv2.VideoWriter(output_video_path, fourcc, fps, (output_width, ou
 
 
 # both first and second frames cant be predict, so we directly write the frames to output video
-# capture frame-by-frame
-video.set(1, currentFrame)
-ret, img1 = video.read()
-# write image to video
-output_video.write(img1)
-currentFrame += 1
-# resize it
-img1 = cv2.resize(img1, (width, height))
-# input must be float type
-img1 = img1.astype(np.float32)
 
-# capture frame-by-frame
+# first frame
+video.set(1, currentFrame)  # capture frame-by-frame
+ret, img1 = video.read()
+output_video.write(img1)  # write image to video
+currentFrame += 1
+img1 = cv2.resize(img1, (width, height))  # resize it
+img1 = img1.astype(np.float32)  # input must be float type
+
+# second frame (same process as first frame)
 video.set(1, currentFrame)
 ret, img = video.read()
-# write image to video
 output_video.write(img)
 currentFrame += 1
-# resize it
 img = cv2.resize(img, (width, height))
-# input must be float type
 img = img.astype(np.float32)
-
-prev_x, prev_y = [0, 0]
-prev_vel_x, prev_vel_y = [0, 0]
-color_index = 0
-colors = ["red", "blue"]
 
 while True:
     img2 = img1
@@ -144,15 +133,6 @@ while True:
             y = int(circles[0][0][1])
             print(currentFrame, x, y)
 
-            vel_x = x - prev_x
-            vel_y = y - prev_y
-
-            is_vel_x_changed = (vel_x > 0 and prev_vel_x < 0) or (vel_x < 0 and prev_vel_x > 0)
-            is_vel_y_changed = (vel_y > 0 and prev_vel_y < 0) or (vel_y < 0 and prev_vel_y > 0)
-
-            if is_vel_x_changed or is_vel_y_changed:
-                colos_index = 0 if color_index == 1 else 1
-
             # push x,y to queue
             q.appendleft([x, y])
             # pop x,y from queue
@@ -175,7 +155,7 @@ while True:
             draw_y = q[i][1]
             bbox = (draw_x - 2, draw_y - 2, draw_x + 2, draw_y + 2)
             draw = ImageDraw.Draw(PIL_image)
-            draw.ellipse(bbox, outline=colors[color_index])
+            draw.ellipse(bbox, outline="yellow")
             del draw
 
     # Convert PIL image format back to opencv image format
@@ -185,10 +165,6 @@ while True:
 
     # next frame
     currentFrame += 1
-
-    # save position and velocity
-    prev_x, prev_y = X, y
-    prev_vel_x, prev_vel_y = vel_x, vel_y
 
 # everything is done, release the video
 video.release()
