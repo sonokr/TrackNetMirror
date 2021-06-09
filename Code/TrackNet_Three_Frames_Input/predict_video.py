@@ -19,6 +19,8 @@ output_video_path = args.output_video_path
 save_weights_path = args.save_weights_path
 n_classes = args.n_classes
 
+output_text_path = input_video_path.replace("mp4", "csv").replace("MP4", "csv")
+
 if output_video_path == "":
     # output video in same path
     output_video_path = input_video_path.split(".")[0] + "_TrackNet.mp4"
@@ -76,6 +78,7 @@ img = cv2.resize(img, (width, height))
 # input must be float type
 img = img.astype(np.float32)
 
+f = open(output_text_path, "w")
 
 while True:
 
@@ -140,6 +143,8 @@ while True:
             y = int(circles[0][0][1])
             print(currentFrame, x, y)
 
+            f.write(f"{currentFrame}, {x}, {y},\n")
+
             # push x,y to queue
             q.appendleft([x, y])
             # pop x,y from queue
@@ -176,4 +181,5 @@ while True:
 # everything is done, release the video
 video.release()
 output_video.release()
+f.close()
 print("finish")
